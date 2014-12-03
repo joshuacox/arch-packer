@@ -1,0 +1,16 @@
+# Cache objects
+packer/packer_cache/
+packer/Berksfile.lock
+packer/vendor/
+
+# For built boxes
+*.box
+builds/
+
+#old
+packer_arch_virtualbox.box
+packer_arch_vmware.box
+packer_cache
+output-vmware
+output-qemu
+

@@ -1,0 +1,153 @@
+{
+  "variables": {
+      "iso_url": "http://dfw.mirror.rackspace.com/archlinux/iso/2014.12.01/archlinux-2014.12.01-dual.iso",
+      "iso_checksum": "86085153f97f0097fd0a02496e67cf85138c1ba5",
+      "iso_checksum_type": "sha1"
+  },
+  "provisioners": [
+    {
+      "type": "shell",
+      "scripts": [
+        "scripts/base.sh",
+        "scripts/powerofftimerinstall.sh",
+        "scripts/pacman.sh",
+        "scripts/bootloader.sh",
+        "scripts/ssh.sh",
+        "scripts/reboot.sh",
+        "scripts/sudo.sh",
+        "scripts/user.sh",
+        "scripts/aur.sh",
+        "scripts/virtualbox.sh",
+        "scripts/ruby.sh",
+        "scripts/chef.sh",
+        "scripts/puppet.sh",
+        "scripts/vagrant.sh",
+        "scripts/reboot.sh",
+        "scripts/cleanup.sh",
+        "scripts/zerodisk.sh"
+      ],
+      "override": {
+        "qemu": {
+          "environment_vars": [
+          "SYSTEMDRIVE=/dev/vda"
+          ]
+        },
+        "virtualbox-iso": {
+          "environment_vars": [
+          "SYSTEMDRIVE=/dev/sda"
+          ]
+        },
+        "vmware": {
+          "environment_vars": [
+          "SYSTEMDRIVE=/dev/sda"
+          ],
+          "execute_command": "cat '{{.Path}}'|su -"
+        }
+      }
+    }
+  ],
+  "builders": [
+    {
+      "type": "qemu",
+      "boot_command": [
+        "<enter><wait>",
+        "<Wait30><wait>",
+        "<wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait>",
+        "<enter><wait>",
+        "echo \"sshd: ALL\" > /etc/hosts.allow<enter><wait>",
+        "passwd<enter><wait>",
+        "veewee<enter><wait>",
+        "veewee<enter><wait>",
+        "pwd <enter><wait>",
+        "/usr/bin/curl -O http://{{.HTTPIP}}:{{.HTTPPort}}/poweroff.timer<enter><wait5>",
+        "systemctl start sshd.service<enter><wait><wait>"
+      ],
+      "boot_wait": "5s",
+      "disk_size": 10140,
+      "accelerator": "kvm",
+      "headless": "false",
+      "http_directory": ".",
+      "iso_url": "{{user `iso_url`}}",
+      "iso_checksum": "{{user `iso_checksum`}}",
+      "iso_checksum_type": "{{user `iso_checksum_type`}}",
+      "ssh_username": "root",
+      "ssh_password": "veewee",
+      "ssh_port": 22,
+      "ssh_wait_timeout": "10000s",
+      "shutdown_command": "systemctl start poweroff.timer"
+    },
+    {
+      "type": "virtualbox-iso",
+      "boot_command": [
+        "<enter><wait>",
+        "<Wait30><wait>",
+        "<wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait>",
+        "echo \"sshd: ALL\" > /etc/hosts.allow<enter><wait>",
+        "passwd<enter><wait>",
+        "veewee<enter><wait>",
+        "veewee<enter><wait>",
+        "/usr/bin/curl -O http://{{.HTTPIP}}:{{.HTTPPort}}/poweroff.timer<enter><wait5>",
+        "systemctl start sshd.service<enter><wait><wait>"
+      ],
+      "boot_wait": "5s",
+      "disk_size": 10140,
+      "http_directory": ".",
+      "guest_os_type": "ArchLinux_64",
+      "iso_url": "{{user `iso_url`}}",
+      "iso_checksum": "{{user `iso_checksum`}}",
+      "iso_checksum_type": "{{user `iso_checksum_type`}}",
+      "ssh_username": "root",
+      "ssh_password": "veewee",
+      "ssh_port": 22,
+      "ssh_wait_timeout": "10000s",
+      "shutdown_command": "systemctl start poweroff.timer",
+      "guest_additions_path": "VBoxGuestAdditions_{{.Version}}.iso",
+      "virtualbox_version_file": ".vbox_version",
+      "vboxmanage": [
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--memory",
+          "256"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--cpus",
+          "1"
+        ]
+      ]
+    },
+    {
+      "type": "vmware",
+      "boot_command": [
+        "<enter><wait>",
+        "<Wait30><wait>",
+        "<wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait><wait>",
+        "echo \"sshd: ALL\" > /etc/hosts.allow<enter><wait>",
+        "passwd<enter><wait>",
+        "veewee<enter><wait>",
+        "veewee<enter><wait>",
+        "/usr/bin/curl -O http://{{.HTTPIP}}:{{.HTTPPort}}/poweroff.timer<enter><wait5>",
+        "systemctl start sshd.service<enter><wait><wait>"
+      ],
+      "boot_wait": "5s",
+      "disk_size": 10140,
+      "http_directory": ".",
+      "guest_os_type": "other26xlinux-64",
+      "iso_url": "{{user `iso_url`}}",
+      "iso_checksum": "{{user `iso_checksum`}}",
+      "iso_checksum_type": "{{user `iso_checksum_type`}}",
+      "ssh_username": "root",
+      "ssh_password": "veewee",
+      "ssh_port": 22,
+      "ssh_wait_timeout": "10000s",
+      "shutdown_command": "systemctl start poweroff.timer",
+      "vmx_data": {
+        "memsize": "256",
+        "numvcpus": "1",
+        "cpuid.coresPerSocket": "1"
+      }
+    }
+  ]
+}
